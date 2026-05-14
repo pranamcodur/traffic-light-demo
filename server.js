@@ -83,13 +83,39 @@ app.post('/api/cycle', apiGuardAndLog, (req, res) => {
     }
 
     res.json({ message: "Cycle started" });
+
+    let direction = 1; // 1 for forward (Red -> Green), -1 for backward (Green -> Red)
+
+    // Inside the /api/cycle interval European Style:
+    cycleInterval = setInterval(() => {
+        const currentIndex = validStates.indexOf(currentState);
+        
+        // Determine the next index
+        let nextIndex = currentIndex + direction;
     
+        // Check boundaries and flip direction if necessary
+        if (nextIndex >= validStates.length) {
+            // We were at Green, now go back to Amber
+            direction = -1;
+            nextIndex = validStates.length - 2; 
+        } else if (nextIndex < 0) {
+            // We were at Red, now go forward to Amber
+            direction = 1;
+            nextIndex = 1;
+        }
+    
+        currentState = validStates[nextIndex];
+        io.emit('state-change', currentState);
+    }, 2000);
+
+    /* USA Style
     cycleInterval = setInterval(() => {
         const currentIndex = validStates.indexOf(currentState);
         const nextIndex = (currentIndex + 1) % validStates.length;
         currentState = validStates[nextIndex];
         io.emit('state-change', currentState);
     }, 2000); // Change every 2 seconds
+    */
 });
 
 //server.listen(3000, () => {
