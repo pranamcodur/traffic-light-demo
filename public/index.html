@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Center v1.1</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .light { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); filter: brightness(0.1); border: 4px solid rgba(0,0,0,0.3); }
+        .light.active.red { background-color: #ff3b30; filter: brightness(1.2) drop-shadow(0 0 30px #ff3b30); }
+        .light.active.amber { background-color: #ffcc00; filter: brightness(1.2) drop-shadow(0 0 30px #ffcc00); }
+        .light.active.green { background-color: #4cd964; filter: brightness(1.2) drop-shadow(0 0 30px #4cd964); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col lg:flex-row">
+
+    <!-- Signal Display -->
+    <div class="lg:w-1/2 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-slate-800 p-12">
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-black tracking-tighter text-white italic uppercase">Signal Center</h1>
+            <p class="text-slate-500 text-sm mt-2">Real-time IoT Simulation v1.1</p>
+        </div>
+        
+        <div class="bg-slate-900 p-10 rounded-[4rem] border-[12px] border-slate-800 shadow-2xl">
+            <div id="red" class="light red w-32 h-32 rounded-full mb-8 active"></div>
+            <div id="amber" class="light amber w-32 h-32 rounded-full mb-8"></div>
+            <div id="green" class="light green w-32 h-32 rounded-full"></div>
+        </div>
+
+        <div class="mt-12 flex flex-col items-center gap-4">
+             <div class="bg-slate-900/50 px-6 py-3 rounded-2xl border border-slate-800 flex items-center gap-4">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Master Key</span>
+                <code class="text-blue-400 font-mono">demo-secret-123</code>
+            </div>
+            <div class="flex gap-4">
+                <a href="/api-docs" target="_blank" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold transition-all transform hover:scale-105">API Explorer</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Debugger -->
+    <div class="lg:w-1/2 flex flex-col p-8 h-screen overflow-hidden">
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-xl font-bold text-emerald-400 flex items-center">
+                <span class="h-2 w-2 bg-emerald-500 rounded-full mr-3 animate-pulse"></span>
+                Live API Debugger
+            </h2>
+            <div class="text-[10px] text-slate-500 font-mono bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
+                LISTENING ON PORT 3000
+            </div>
+        </div>
+        
+        <div id="logs" class="flex-1 overflow-y-auto space-y-4 custom-scrollbar pr-2">
+            <div id="placeholder" class="h-full flex items-center justify-center text-slate-700 italic text-sm">
+                Waiting for incoming traffic...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const logsContainer = document.getElementById('logs');
+        const placeholder = document.getElementById('placeholder');
+
+        socket.on('state-change', (state) => {
+            document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
+            document.getElementById(state).classList.add('active');
+        });
+
+        socket.on('api-log', (log) => {
+            if (placeholder) placeholder.style.display = 'none';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = "bg-slate-900 border border-slate-800 p-5 rounded-2xl transition-all duration-500 border-l-4 " + (log.status < 400 ? 'border-l-emerald-500' : 'border-l-rose-500');
+            
+            logEntry.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <span class="text-xs font-black bg-slate-800 text-slate-300 px-2 py-1 rounded uppercase tracking-tighter">${log.method}</span>
+                    <span class="text-xs font-mono text-slate-500">${log.timestamp}</span>
+                </div>
+                <div class="text-sm font-mono text-blue-300 mb-2">${log.path}</div>
+                <div class="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-500 uppercase mb-4">
+                    <div>Status: <span class="${log.status < 400 ? 'text-emerald-500' : 'text-rose-500'}">${log.status}</span></div>
+                    <div>Latency: <span class="text-slate-300">${log.responseTime}</span></div>
+                </div>
+                <div class="bg-black/50 p-4 rounded-xl font-mono text-[11px] text-slate-400 overflow-x-auto">
+                    ${JSON.stringify(log.payload, null, 2)}
+                </div>
+            `;
+            logsContainer.prepend(logEntry);
+        });
+    </script>
+</body>
+</html>
