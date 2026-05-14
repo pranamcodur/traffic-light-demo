@@ -1,0 +1,41 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Traffic Light API", "version": "1.1.0" },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "x-api-key" }
+    }
+  },
+  "paths": {
+    "/api/state": {
+      "get": {
+        "summary": "Get current light state",
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      },
+      "post": {
+        "summary": "Change light state manually",
+        "security": [{ "ApiKeyAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "properties": { "state": { "type": "string", "enum": ["red", "amber", "green"] } } } } }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/colors": {
+      "get": {
+        "summary": "List all valid color states",
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": { "200": { "description": "Returns array of colors" } }
+      }
+    },
+    "/api/cycle": {
+      "post": {
+        "summary": "Toggle automatic cycling of lights",
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": { "200": { "description": "Toggle cycle state" } }
+      }
+    }
+  }
+}
