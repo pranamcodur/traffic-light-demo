@@ -99,6 +99,24 @@
             `;
             logsContainer.prepend(logEntry);
         });
+
+        // To trigger the cross walk button
+        async function pressCrosswalkButton() {
+            try {
+                const response = await fetch('/api/pedestrian', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'demo-secret-123' // The required security key
+                    }
+                });
+                
+                const data = await response.json();
+                console.log('Pedestrian request sent:', data);
+            } catch (error) {
+                console.error('Error triggering pedestrian crossing:', error);
+            }
+        }
     </script>
 </body>
 </html>
