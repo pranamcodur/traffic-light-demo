@@ -36,6 +36,18 @@
         "security": [{ "ApiKeyAuth": [] }],
         "responses": { "200": { "description": "Toggle cycle state" } }
       }
+    },
+    "/api/pedestrian": {
+      "post": {
+        "summary": "Trigger pedestrian crosswalk request",
+        "description": "Initiates a safety sequence: if the light is green, it turns amber immediately, then transitions to red after 2 seconds to let pedestrians cross.",
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": { 
+          "200": { 
+            "description": "Pedestrian button sequence initiated successfully" 
+          } 
+        }
+      }
     }
   }
 }
