@@ -13,17 +13,7 @@
         .light.active.green { background-color: #4cd964; filter: brightness(1.2) drop-shadow(0 0 30px #4cd964); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .ped-light { color: #475569; transition: all 0.3s ease; }
-        .ped-light .header-dot, .ped-light .body-box { opacity: 0.1; }
-        
-        /* When active, the Red Man glows vivid Rose/Red */
-        ped-red.active { color: #f43f5e; filter: drop-shadow(0 0 15px #f43f5e); }
-        ped-red.active .header-dot, #ped-red.active .body-box { opacity: 1; }
-        
-        /* When active, the Green Man glows vivid Emerald/Green */
-        ped-green.active { color: #10b981; filter: drop-shadow(0 0 15px #10b981); }
-        ped-green.active .header-dot, #ped-green.active .body-box { opacity: 1; }
-    </style>
+     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col lg:flex-row">
 
@@ -47,20 +37,6 @@
             </button>
         </div>
 
-        <div class="bg-slate-900 p-6 rounded-3xl border-4 border-slate-800 flex flex-col gap-4 items-center w-24 shadow-inner">
-            <span class="text-[9px] font-black text-slate-600 tracking-widest uppercase">PED</span>
-            
-            <div id="ped-red" class="ped-light text-center font-bold tracking-tighter text-xs active">
-                <div class="w-10 h-10 mx-auto rounded-full bg-current mb-1 opacity-20 transition-all duration-300 header-dot"></div>
-                <div class="w-8 h-12 mx-auto rounded-md bg-current opacity-20 transition-all duration-300 body-box flex items-center justify-center text-[10px] text-slate-950 font-black">WAIT</div>
-            </div>
-            
-            <div id="ped-green" class="ped-light text-center font-bold tracking-tighter text-xs">
-                <div class="w-10 h-10 mx-auto rounded-full bg-current mb-1 opacity-20 transition-all duration-300 header-dot"></div>
-                <div class="w-8 h-12 mx-auto rounded-md bg-current opacity-20 transition-all duration-300 body-box flex items-center justify-center text-[10px] text-slate-950 font-black">WALK</div>
-            </div>
-        </div>
-        
         <div class="mt-12 flex flex-col items-center gap-4">
              <div class="bg-slate-900/50 px-6 py-3 rounded-2xl border border-slate-800 flex items-center gap-4">
                 <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Master Key [Displayed for Test Purpose]</span>
@@ -141,30 +117,6 @@
                 console.error('Error triggering pedestrian crossing:', error);
             }
         }
-
-        //Change of lights for pedestrain
-        let pedestrianTimeout = null;
-
-        socket.on('state-change', (state) => {
-            // 1. Update the main traffic light immediately
-            document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
-            document.getElementById(state).classList.add('active');
-        
-            // 2. Clear any pending pedestrian light switches
-            if (pedestrianTimeout) clearTimeout(pedestrianTimeout);
-        
-            if (state === 'red') {
-                // If main light is RED, wait 1 second before turning on the Green Man
-                pedestrianTimeout = setTimeout(() => {
-                    document.getElementById('ped-red').classList.remove('active');
-                    document.getElementById('ped-green').classList.add('active');
-                }, 1000); 
-            } else {
-                // If main light is AMBER or GREEN, immediately show the Red Man
-                document.getElementById('ped-green').classList.remove('active');
-                document.getElementById('ped-red').classList.add('active');
-            }
-        });
     </script>
 </body>
 </html>
