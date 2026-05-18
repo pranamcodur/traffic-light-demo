@@ -13,6 +13,24 @@
         .light.active.green { background-color: #4cd964; filter: brightness(1.2) drop-shadow(0 0 30px #4cd964); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        /* Inactive States (Dimmed back into the slate background) */
+        .ped-indicator { transition: all 0.2s ease-in-out; }
+        
+        /* Active Red Light (Vivid glowing background and text) */
+        #ped-red.active { 
+            background-color: #f43f5e; 
+            color: #1c0005; 
+            border-color: #fda4af;
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.6); 
+        }
+        
+        /* Active Green Light (Vivid glowing background and text) */
+        #ped-green.active { 
+            background-color: #10b981; 
+            color: #001c10; 
+            border-color: #6ee7b7;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); 
+        }
      </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col lg:flex-row">
@@ -35,6 +53,18 @@
             <button onclick="pressCrosswalkButton()" class="w-full bg-amber-500 hover:bg-amber-600 active:translate-y-0.5 text-slate-950 font-black py-3 px-6 rounded-xl transition-all shadow-[0_4px_20px_rgba(245,158,11,0.2)] uppercase text-xs tracking-wider">
                 🚶‍♂️ Request Crossing
             </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-3xl border-4 border-slate-800 flex flex-col gap-3 items-center w-28 shadow-inner">
+            <span class="text-[10px] font-black text-slate-500 tracking-widest uppercase">Crosswalk</span>
+            
+            <div id="ped-red" class="ped-indicator bg-rose-950/40 text-rose-500/30 border border-rose-900/30 w-full py-2 rounded-xl text-center font-black tracking-wider text-sm transition-all duration-300 active">
+                STOP
+            </div>
+            
+            <div id="ped-green" class="ped-indicator bg-emerald-950/40 text-emerald-500/30 border border-emerald-900/30 w-full py-2 rounded-xl text-center font-black tracking-wider text-sm transition-all duration-300">
+                WALK
+            </div>
         </div>
 
         <div class="mt-12 flex flex-col items-center gap-4">
@@ -117,6 +147,24 @@
                 console.error('Error triggering pedestrian crossing:', error);
             }
         }
+
+        //function to trigger the ped cross
+        socket.on('state-change', (state) => {
+            // Update main traffic light...
+            document.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
+            document.getElementById(state).classList.add('active');
+        
+            // Handle Simplified Pedestrian Logic
+            if (state === 'red') {
+                // Main signal is RED -> Show WALK, turn off STOP
+                document.getElementById('ped-red').classList.remove('active');
+                document.getElementById('ped-green').classList.add('active');
+            } else {
+                // Main signal is GREEN or AMBER -> Show STOP, turn off WALK
+                document.getElementById('ped-green').classList.remove('active');
+                document.getElementById('ped-red').classList.add('active');
+            }
+        });
     </script>
 </body>
 </html>
