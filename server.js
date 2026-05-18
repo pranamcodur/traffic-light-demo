@@ -118,6 +118,31 @@ app.post('/api/cycle', apiGuardAndLog, (req, res) => {
     */
 });
 
+//5. Pedestrain crossing
+app.post('/api/pedestrian', apiGuardAndLog, (req, res) => {
+    if (currentState !== 'green') {
+        return res.json({ message: "Request ignored. Light is already changing or red.", state: currentState });
+    }
+
+    // Stop any automated cycling if a human pushes the button
+    if (cycleInterval) {
+        clearInterval(cycleInterval);
+        cycleInterval = null;
+    }
+
+    // Phase 1: Shift to Amber immediately
+    currentState = 'amber';
+    io.emit('state-change', currentState);
+
+    // Phase 2: Wait 2 seconds, then shift to Red
+    setTimeout(() => {
+        currentState = 'red';
+        io.emit('state-change', currentState);
+    }, 2000);
+
+    res.json({ message: "Pedestrian button pressed. Initiating stop sequence.", state: "amber" });
+});
+
 //server.listen(3000, () => {
 //    console.log('Traffic Light Demo running at http://localhost:3000');
 //});
