@@ -13,6 +13,16 @@
         .light.active.green { background-color: #4cd964; filter: brightness(1.2) drop-shadow(0 0 30px #4cd964); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .ped-light { color: #475569; transition: all 0.3s ease; }
+        .ped-light .header-dot, .ped-light .body-box { opacity: 0.1; }
+        
+        /* When active, the Red Man glows vivid Rose/Red */
+        #ped-red.active { color: #f43f5e; filter: drop-shadow(0 0 15px #f43f5e); }
+        #ped-red.active .header-dot, #ped-red.active .body-box { opacity: 1; }
+        
+        /* When active, the Green Man glows vivid Emerald/Green */
+        #ped-green.active { color: #10b981; filter: drop-shadow(0 0 15px #10b981); }
+        #ped-green.active .header-dot, #ped-green.active .body-box { opacity: 1; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col lg:flex-row">
@@ -37,12 +47,17 @@
             </button>
         </div>
 
-        <div class="bg-slate-900 p-4 rounded-2xl border-4 border-slate-800 flex flex-col gap-4 items-center">
-            <div id="ped-red" class="ped-light active text-rose-600">
-                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">...</svg>
+        <div class="bg-slate-900 p-6 rounded-3xl border-4 border-slate-800 flex flex-col gap-4 items-center w-24 shadow-inner">
+            <span class="text-[9px] font-black text-slate-600 tracking-widest uppercase">PED</span>
+            
+            <div id="ped-red" class="ped-light text-center font-bold tracking-tighter text-xs active">
+                <div class="w-10 h-10 mx-auto rounded-full bg-current mb-1 opacity-20 transition-all duration-300 header-dot"></div>
+                <div class="w-8 h-12 mx-auto rounded-md bg-current opacity-20 transition-all duration-300 body-box flex items-center justify-center text-[10px] text-slate-950 font-black">WAIT</div>
             </div>
-            <div id="ped-green" class="ped-light text-emerald-500">
-                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">...</svg>
+            
+            <div id="ped-green" class="ped-light text-center font-bold tracking-tighter text-xs">
+                <div class="w-10 h-10 mx-auto rounded-full bg-current mb-1 opacity-20 transition-all duration-300 header-dot"></div>
+                <div class="w-8 h-12 mx-auto rounded-md bg-current opacity-20 transition-all duration-300 body-box flex items-center justify-center text-[10px] text-slate-950 font-black">WALK</div>
             </div>
         </div>
         
